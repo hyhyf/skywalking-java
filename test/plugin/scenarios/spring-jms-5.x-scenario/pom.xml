@@ -92,7 +92,7 @@
     </dependencies>
 
     <build>
-        <finalName>spring-4.3.x-scenario</finalName>
+        <finalName>spring-jms-5.x-scenario</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
