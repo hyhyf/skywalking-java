@@ -19,14 +19,20 @@
 package org.apache.skywalking.apm.testcase.spring.jms.controller;
 
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.jms.core.JmsMessagingTemplate;
+import org.apache.activemq.ActiveMQConnection;
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.jms.Message;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
 import javax.jms.TextMessage;
 
 @RestController
@@ -34,15 +40,41 @@ import javax.jms.TextMessage;
 @Log4j2
 public class CaseController {
 
-    private static final String SUCCESS = "Success";
+    @Value("${activemq.server}")
+    private String brokenUrl;
 
-    @Autowired
-    private JmsMessagingTemplate jmsMessagingTemplate;
+    private static final String USER_NAME = ActiveMQConnection.DEFAULT_USER;
+    private static final String PASSWORD = ActiveMQConnection.DEFAULT_PASSWORD;
+
+    private static final String SUCCESS = "Success";
 
     @RequestMapping("/spring-jms-scenario")
     @ResponseBody
     public String testcase() {
-        jmsMessagingTemplate.convertAndSend("test", "hello world");
+        Session session = null;
+        Connection connection = null;
+        try {
+            ConnectionFactory factory = new ActiveMQConnectionFactory(USER_NAME, PASSWORD, brokenUrl);
+            connection = factory.createConnection();
+            connection.start();
+            session = connection.createSession(Boolean.TRUE, Session.AUTO_ACKNOWLEDGE);
+            Destination destination = session.createQueue("test");
+            MessageProducer messageProducer = session.createProducer(destination);
+            TextMessage message = session.createTextMessage("test");
+            messageProducer.send(message);
+            session.commit();
+            session.close();
+            connection.close();
+        } catch (Exception ex) {
+            log.error(ex);
+            try {
+                session.close();
+                connection.close();
+            } catch (JMSException e) {
+                log.error(e);
+            }
+        }
+        new ConsumerThread().start();
         return SUCCESS;
     }
 
@@ -52,10 +84,31 @@ public class CaseController {
         return SUCCESS;
     }
 
-    @JmsListener(destination = "test", concurrency = "10")
-    public void onMessageReceived(Message message) throws Exception {
-        TextMessage textMessage = (TextMessage) message;
-        log.info("received normal message: " + textMessage.getText());
+    public class ConsumerThread extends Thread {
+        @Override
+        public void run() {
+            Session session = null;
+            Connection connection = null;
+            try {
+                ConnectionFactory factory = new ActiveMQConnectionFactory(USER_NAME, PASSWORD, brokenUrl);
+                connection = factory.createConnection();
+                connection.start();
+                session = connection.createSession(Boolean.TRUE, Session.AUTO_ACKNOWLEDGE);
+                Destination destination = session.createQueue("test");
+                MessageConsumer messageConsumer = session.createConsumer(destination);
+                messageConsumer.receive();
+                session.close();
+                connection.close();
+            } catch (Exception ex) {
+                log.error(ex);
+                try {
+                    session.close();
+                    connection.close();
+                } catch (JMSException e) {
+                    log.error(e);
+                }
+            }
+        }
     }
 
 }
