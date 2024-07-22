@@ -47,6 +47,7 @@ public class CaseController {
     private static final String PASSWORD = ActiveMQConnection.DEFAULT_PASSWORD;
 
     private static final String SUCCESS = "Success";
+    private static final String FAIL = "Fail";
 
     @RequestMapping("/spring-jms-scenario")
     @ResponseBody
@@ -81,6 +82,24 @@ public class CaseController {
     @RequestMapping("/healthCheck")
     @ResponseBody
     public String healthCheck() {
+        Session session = null;
+        Connection connection = null;
+        try {
+            ConnectionFactory factory = new ActiveMQConnectionFactory(USER_NAME, PASSWORD, brokenUrl);
+            connection = factory.createConnection();
+            connection.start();
+            connection.getMetaData().getJMSVersion();
+            connection.close();
+        } catch (Exception ex) {
+            log.error(ex);
+            try {
+                session.close();
+                connection.close();
+            } catch (JMSException e) {
+                log.error(e);
+            }
+            return FAIL;
+        }
         return SUCCESS;
     }
 
