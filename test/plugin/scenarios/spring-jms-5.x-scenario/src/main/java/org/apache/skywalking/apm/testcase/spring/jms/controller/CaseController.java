@@ -16,15 +16,16 @@
  *
  */
 
-package org.apache.skywalking.apm.testcase.spring.jms;
+package org.apache.skywalking.apm.testcase.spring.jms.controller;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -35,7 +36,7 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-@RestController
+@Controller
 @RequestMapping("/case")
 public class CaseController {
     private static final Logger LOGGER = LogManager.getLogger(CaseController.class);
@@ -49,6 +50,7 @@ public class CaseController {
     private static final String SUCCESS = "Success";
 
     @RequestMapping("/spring-jms-scenario")
+    @ResponseBody
     public String testcase() {
         Session session = null;
         Connection connection = null;
@@ -78,6 +80,7 @@ public class CaseController {
     }
 
     @RequestMapping("/healthCheck")
+    @ResponseBody
     public String healthCheck() {
         return SUCCESS;
     }
