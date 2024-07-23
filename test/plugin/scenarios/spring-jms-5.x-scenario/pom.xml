@@ -67,11 +67,11 @@
             <artifactId>spring-webmvc</artifactId>
             <version>${test.framework.version}</version>
         </dependency>
-        <dependency>
+<!--         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-client</artifactId>
             <version>${activemq.version}</version>
-        </dependency>
+        </dependency> -->
     </dependencies>
 
     <build>
