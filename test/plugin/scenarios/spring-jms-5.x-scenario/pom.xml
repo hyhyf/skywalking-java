@@ -27,16 +27,16 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <name>skywalking-spring-jms-5.x-scenario</name>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <compiler.version>1.8</compiler.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <lombok.version>1.18.20</lombok.version>
         <test.framework.version>5.3.37</test.framework.version>
+        <lombok.version>1.18.20</lombok.version>
         <activemq.version>5.14.5</activemq.version>
     </properties>
-
-    <name>skywalking-spring-jms-5.x-scenario</name>
 
     <dependencies>
         <dependency>
@@ -64,26 +64,14 @@
 
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${test.framework.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>${test.framework.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${test.framework.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-client</artifactId>
             <version>${activemq.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>
