@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.skywalking.apm.testcase.spring.jms.controller;
+package org.apache.skywalking.apm.testcase.spring.jms;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
